@@ -1,14 +1,12 @@
-import type { Food, FoodEntry, NutrientKey, Nutrients } from "../types";
-import { FOODS_BY_ID } from "../data/foods";
+import type { FoodEntry, NutrientKey, Nutrients } from "../types";
 import { emptyNutrients, NUTRIENT_ORDER } from "../data/nutrients";
 
 export function nutrientsForEntry(entry: FoodEntry): Nutrients {
-  const food: Food | undefined = FOODS_BY_ID[entry.foodId];
-  if (!food) return emptyNutrients();
   const factor = entry.grams / 100;
   const result = emptyNutrients();
+  const per100g = entry.snapshot.per100g;
   for (const key of NUTRIENT_ORDER) {
-    const v = food.per100g[key as NutrientKey];
+    const v = per100g[key as NutrientKey];
     if (v !== undefined) result[key as NutrientKey] = v * factor;
   }
   return result;

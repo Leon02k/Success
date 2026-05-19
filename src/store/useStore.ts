@@ -4,6 +4,7 @@ import type {
   ActiveEffect,
   ActivityEntry,
   FoodEntry,
+  FoodSnapshot,
   LogEntry,
   StatKey,
   Stats,
@@ -32,11 +33,12 @@ type State = {
   activityLog: ActivityEntry[];
   logEntries: LogEntry[];
   effects: ActiveEffect[];
+  recentExternalFoods: FoodSnapshot[];
   username: string;
 
-  // actions
   setUsername: (name: string) => void;
-  addFood: (foodId: string, grams: number) => void;
+  addCuratedFood: (foodId: string, grams: number) => void;
+  addExternalFood: (snapshot: FoodSnapshot, grams: number) => void;
   removeFood: (id: string) => void;
   addActivity: (activityId: string) => void;
   removeActivity: (id: string) => void;
@@ -48,8 +50,39 @@ type State = {
 
 function applyXp(stats: Stats, key: StatKey, delta: number): Stats {
   const current = stats[key];
-  const newXp = Math.max(0, current.xp + delta);
-  return { ...stats, [key]: { ...current, xp: newXp } };
+  return { ...stats, [key]: { ...current, xp: Math.max(0, current.xp + delta) } };
+}
+
+function applyEffects(
+  state: Pick<State, "stats" | "effects">,
+  snapshot: FoodSnapshot,
+  grams: number,
+): Pick<State, "stats" | "effects"> {
+  let stats = state.stats;
+  const factor = grams / 100;
+  for (const [statKey, xp] of Object.entries(snapshot.effects || {})) {
+    if (xp) stats = applyXp(stats, statKey as StatKey, Math.round(xp * factor));
+  }
+  const effects = [...state.effects];
+  if (snapshot.buff) {
+    effects.push({
+      id: makeId(),
+      name: snapshot.buff,
+      kind: "buff",
+      expiresAt: Date.now() + 4 * 60 * 60 * 1000,
+      source: snapshot.name,
+    });
+  }
+  if (snapshot.debuff) {
+    effects.push({
+      id: makeId(),
+      name: snapshot.debuff,
+      kind: "debuff",
+      expiresAt: Date.now() + 4 * 60 * 60 * 1000,
+      source: snapshot.name,
+    });
+  }
+  return { stats, effects };
 }
 
 export const useStore = create<State>()(
@@ -60,39 +93,44 @@ export const useStore = create<State>()(
       activityLog: [],
       logEntries: [],
       effects: [],
+      recentExternalFoods: [],
       username: "Spieler",
 
       setUsername: (name) => set({ username: name }),
 
-      addFood: (foodId, grams) => {
+      addCuratedFood: (foodId, grams) => {
         const food = FOODS_BY_ID[foodId];
         if (!food) return;
-        const entry: FoodEntry = { id: makeId(), foodId, grams, timestamp: Date.now() };
-        let stats = get().stats;
-        const factor = grams / food.defaultGrams;
-        for (const [statKey, xp] of Object.entries(food.effects)) {
-          if (xp) stats = applyXp(stats, statKey as StatKey, Math.round(xp * factor));
-        }
-        const effects = [...get().effects];
-        if (food.buff) {
-          effects.push({
-            id: makeId(),
-            name: food.buff,
-            kind: "buff",
-            expiresAt: Date.now() + 4 * 60 * 60 * 1000,
-            source: food.name,
-          });
-        }
-        if (food.debuff) {
-          effects.push({
-            id: makeId(),
-            name: food.debuff,
-            kind: "debuff",
-            expiresAt: Date.now() + 4 * 60 * 60 * 1000,
-            source: food.name,
-          });
-        }
-        set({ foodLog: [...get().foodLog, entry], stats, effects });
+        const snapshot: FoodSnapshot = {
+          name: food.name,
+          emoji: food.emoji,
+          category: food.category,
+          per100g: food.per100g,
+          effects: food.effects,
+          buff: food.buff,
+          debuff: food.debuff,
+          source: "curated",
+        };
+        const entry: FoodEntry = {
+          id: makeId(), foodId, snapshot, grams, timestamp: Date.now(),
+        };
+        const next = applyEffects(get(), snapshot, grams);
+        set({ foodLog: [...get().foodLog, entry], ...next });
+      },
+
+      addExternalFood: (snapshot, grams) => {
+        const entry: FoodEntry = {
+          id: makeId(), snapshot, grams, timestamp: Date.now(),
+        };
+        const next = applyEffects(get(), snapshot, grams);
+        const recent = [snapshot, ...get().recentExternalFoods.filter(
+          (s) => s.externalId !== snapshot.externalId,
+        )].slice(0, 12);
+        set({
+          foodLog: [...get().foodLog, entry],
+          recentExternalFoods: recent,
+          ...next,
+        });
       },
 
       removeFood: (id) => {
@@ -129,10 +167,41 @@ export const useStore = create<State>()(
           activityLog: [],
           logEntries: [],
           effects: [],
+          recentExternalFoods: [],
         }),
     }),
     {
-      name: "success-tracker-v1",
+      name: "success-tracker-v2",
+      version: 2,
+      migrate: (state: any, fromVersion: number) => {
+        if (fromVersion < 2 && state) {
+          // Migrate v1 food entries (foodId only, no snapshot) to v2 (snapshot embedded)
+          if (Array.isArray(state.foodLog)) {
+            state.foodLog = state.foodLog
+              .map((e: any) => {
+                if (e.snapshot) return e;
+                const food = e.foodId ? FOODS_BY_ID[e.foodId] : undefined;
+                if (!food) return null;
+                return {
+                  ...e,
+                  snapshot: {
+                    name: food.name,
+                    emoji: food.emoji,
+                    category: food.category,
+                    per100g: food.per100g,
+                    effects: food.effects,
+                    buff: food.buff,
+                    debuff: food.debuff,
+                    source: "curated",
+                  },
+                };
+              })
+              .filter(Boolean);
+          }
+          state.recentExternalFoods = state.recentExternalFoods || [];
+        }
+        return state;
+      },
     },
   ),
 );
