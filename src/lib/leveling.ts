@@ -1,4 +1,4 @@
-// XP curve: each level needs more XP. Solo Leveling-ish exponential growth.
+// XP curve: each level needs more XP. Mild exponential growth.
 export function xpForLevel(level: number): number {
   return Math.floor(100 * Math.pow(level, 1.5));
 }

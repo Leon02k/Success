@@ -68,7 +68,7 @@ export default function App() {
       </main>
 
       <footer className="app-footer">
-        ARISE. // Werde stärker, jeden Tag.
+        EIN PROZENT BESSER // jeden Tag.
       </footer>
     </div>
   );

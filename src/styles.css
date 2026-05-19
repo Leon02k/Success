@@ -217,14 +217,14 @@ input:focus, textarea:focus {
   font-size: 0.75rem;
 }
 
-.hunter-block {
+.profile-block {
   display: flex;
   gap: 1.5rem;
   align-items: center;
   padding: 1.5rem;
   border-bottom: 1px solid var(--line);
 }
-.hunter-rank {
+.profile-rank {
   font-size: 4rem;
   font-weight: 900;
   font-family: "Georgia", serif;
@@ -235,8 +235,8 @@ input:focus, textarea:focus {
   line-height: 1;
   background: rgba(0, 0, 0, 0.4);
 }
-.hunter-info { flex: 1; min-width: 0; }
-.hunter-name {
+.profile-info { flex: 1; min-width: 0; }
+.profile-name {
   background: transparent;
   border: none;
   font-size: 1.5rem;
@@ -247,20 +247,20 @@ input:focus, textarea:focus {
   width: 100%;
   border-bottom: 1px dashed transparent;
 }
-.hunter-name:hover,
-.hunter-name:focus {
+.profile-name:hover,
+.profile-name:focus {
   border-bottom-color: var(--line);
   box-shadow: none;
 }
-.hunter-meta {
+.profile-meta {
   margin-top: 0.4rem;
   color: var(--text-dim);
   font-size: 0.9rem;
 }
-.hunter-meta.small { font-size: 0.75rem; margin-top: 0.4rem; }
-.hunter-meta strong { color: var(--accent); }
+.profile-meta.small { font-size: 0.75rem; margin-top: 0.4rem; }
+.profile-meta strong { color: var(--accent); }
 
-.hunter-xp-bar {
+.profile-xp-bar {
   margin-top: 0.8rem;
   height: 8px;
   border: 1px solid var(--line);
@@ -268,7 +268,7 @@ input:focus, textarea:focus {
   border-radius: 4px;
   overflow: hidden;
 }
-.hunter-xp-fill {
+.profile-xp-fill {
   height: 100%;
   background: linear-gradient(90deg, var(--accent), var(--accent-2));
   box-shadow: 0 0 12px var(--accent);

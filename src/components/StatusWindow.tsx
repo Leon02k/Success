@@ -19,27 +19,27 @@ export function StatusWindow() {
         <span className="dot" />
         <span className="window-title">// STATUS WINDOW</span>
       </div>
-      <div className="hunter-block">
-        <div className="hunter-rank" style={{ color: r.color, boxShadow: `0 0 20px ${r.color}66` }}>
+      <div className="profile-block">
+        <div className="profile-rank" style={{ color: r.color, boxShadow: `0 0 20px ${r.color}66` }}>
           {r.rank}
         </div>
-        <div className="hunter-info">
+        <div className="profile-info">
           <input
-            className="hunter-name"
+            className="profile-name"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
-          <div className="hunter-meta">
-            Level <strong>{overall.level}</strong> · Hunter ·{" "}
+          <div className="profile-meta">
+            Level <strong>{overall.level}</strong> · Aufsteiger ·{" "}
             {totalXp.toLocaleString("de-DE")} XP gesamt
           </div>
-          <div className="hunter-xp-bar">
+          <div className="profile-xp-bar">
             <div
-              className="hunter-xp-fill"
+              className="profile-xp-fill"
               style={{ width: `${(overall.intoLevel / overall.needed) * 100}%` }}
             />
           </div>
-          <div className="hunter-meta small">
+          <div className="profile-meta small">
             {overall.intoLevel} / {overall.needed} XP bis Level {overall.level + 1}
           </div>
         </div>

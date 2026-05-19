@@ -1,11 +1,11 @@
 # SUCCESS // Self-Improvement Tracker
 
-Solo Leveling-inspirierte Self-Improvement App. Tracke alle Bereiche deines Lebens, sieh Buffs/Debuffs in Echtzeit und bekomme tägliche Insights aus deinem Logbuch.
+Gamifizierte Self-Improvement App im RPG/litRPG-Stil. Tracke alle Bereiche deines Lebens, sieh Buffs/Debuffs in Echtzeit und bekomme tägliche Insights aus deinem Logbuch.
 
 ## Features
 
 - **Status Window**: 6 Lebensbereiche mit Level/XP-System (Gesundheit, Stärke, Geist, Disziplin, Wissen, Charisma)
-- **Hunter Rank**: E → D → C → B → A → S basierend auf Gesamt-Level
+- **Aufstiegs-Rang**: E → D → C → B → A → S basierend auf Gesamt-Level
 - **Nahrungs-Tracker**: Vorgepflegte Datenbank mit gesunden & ungesunden Lebensmitteln
 - **Nährstoff-Anzeige**: Live-Tracking von Makros, Vitaminen & Mineralien gegen Tagesbedarf
 - **Buff/Debuff-System**: Gutes Essen gibt temporäre Boosts, schlechtes Essen Debuffs
